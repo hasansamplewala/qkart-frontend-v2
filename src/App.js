@@ -14,3 +14,6 @@ function App() {
 }
 
 export default App;
+
+
+//  curl -X POST -H "Content-Type: application/json" -d '{"username": "linuxize", "password": "linuxize@example.com"}' http://13.127.38.27:8082/api/v1/auth/register
