@@ -16,7 +16,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
 
 
   function RegPageButtons() {
-    console.log('RegPageButtons')
+    // console.log('RegPageButtons')
     return (
       <Link to="/">
         <Button
@@ -31,7 +31,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
   }
 
   function UserLoggedOutButtons() {
-    console.log('UserLoggedOutButtons', hasHiddenAuthButtons)
+    // console.log('UserLoggedOutButtons', hasHiddenAuthButtons)
     return(
       <Stack direction="row" spacing={2}>
         <Button className="button" variant="text" onClick={() => history.push("/login", { from: "Products" })}>
@@ -44,9 +44,9 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
     );
   }
   function UserLoggedInButtons(){
-    console.log('UserLoggedInButtons', hasHiddenAuthButtons)
+    // console.log('UserLoggedInButtons', hasHiddenAuthButtons)
     const username = localStorage.getItem('username')
-return (
+    return (
   <Stack direction="row" spacing={2}>
  <Avatar alt={username} src="avatar.png" />
  <p>{username}</p>
@@ -56,6 +56,8 @@ return (
 </Stack>
 )
 }
+
+
 
 function HeaderButtons(){
 const userToken = localStorage.getItem('token')
@@ -81,7 +83,7 @@ if (userToken !== null) {
         <img src="logo_light.svg" alt="QKart-icon"></img>
       </Box>
       {/* User is logged in */}
-
+{children}
 <HeaderButtons />
 
       {/* User is logged out */}
