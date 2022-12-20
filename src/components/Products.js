@@ -10,6 +10,7 @@ import axios from "axios";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { config } from "../App";
+import Cart from "./Cart";
 import Footer from "./Footer";
 import Header from "./Header";
 import ProductCard from "./ProductCard";
@@ -117,6 +118,7 @@ const Products = () => {
    */
   const [searchText, setSearchText] = useState("");
   const [error, setError] = useState(false);
+  const userToken = localStorage.getItem("token");
   const performSearch = async (text) => {
     try {
       console.log("text", text);
@@ -154,7 +156,7 @@ const Products = () => {
    */
   const [debounceTimer, setDebounceTimer] = useState(0);
   const debounceSearch = (event, debounceTimeout) => {
-    setSearchText(event)
+    setSearchText(event);
     if (debounceTimer !== 0) {
       clearTimeout(debounceTimer);
     }
@@ -208,8 +210,9 @@ const Products = () => {
         name="search"
       />
 
-      <Grid container>
-        <Grid item className="product-grid">
+      <Grid container direction="row" justify="center" alignItems="stretch">
+        <Grid sm={12} md={9}>
+        <Grid item md={12} className="product-grid">
           <Box className="hero">
             <p className="hero-heading">
               India’s <span className="hero-highlight">FASTEST DELIVERY</span>{" "}
@@ -217,33 +220,43 @@ const Products = () => {
             </p>
           </Box>
         </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        {isLoading ? (
-          <Box className="loading" sx={{ display: "flex" }}>
-            <CircularProgress />
-            <br />
-            <p>Loading Products</p>
-          </Box>
-        ) : error ? (
-          <Grid className="loading" item xs={12} md={12}>
-          {console.log('A', error)}
 
-            <SentimentDissatisfied />
-            <br/>
-            <p>No products found</p>
+
+        <Grid  md={12}>
+          <Grid container spacing={2}>
+            {isLoading ? (
+              <Box className="loading" sx={{ display: "flex" }}>
+                <CircularProgress />
+                <br />
+                <p>Loading Products</p>
+              </Box>
+            ) : error ? (
+              <Grid className="loading" item xs={12} md={12}>
+                {console.log("A", error)}
+
+                <SentimentDissatisfied />
+                <br />
+                <p>No products found</p>
+              </Grid>
+            ) : (
+              products.map((product) => (
+                <Grid key={product._id} item xs={6} md={3}>
+                  {console.log("A", error)}
+                  <ProductCard product={product} handleAddToCart={() => {}} />
+                </Grid>
+              ))
+            )}
           </Grid>
-        ) : (
-          products.map((product) => (
-            <Grid key={product._id} item xs={6} md={3}>
-          {console.log('A', error)}
-              <ProductCard product={product} handleAddToCart={() => {}} />
-            </Grid>
-          ))
-        )    
-        }
-      </Grid>
+        </Grid>
+        </Grid>
 
+        {userToken !== null && (
+          <Grid item sm={12} md={3}>
+            <Cart />
+          </Grid>
+        )}
+
+      </Grid>
       <Footer />
     </div>
   );
