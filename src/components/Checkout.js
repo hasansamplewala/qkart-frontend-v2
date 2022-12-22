@@ -45,13 +45,78 @@ import Header from "./Header";
 
 
 const Checkout = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  const userToken = localStorage.getItem("token");
+  const URL = config.endpoint + "/products";
+  const [cartData, setCartData] = useState([])
+  const [allProductsData, setAllProductsData] = useState([])
 
+  const fetchCart = async (token) => {
+    if (!token) return;
 
+    try {
+      // TODO: CRIO_TASK_MODULE_CART - Pass Bearer token inside "Authorization" header to get data from "GET /cart" API and return the response data
+      console.log(`fetching cart data with token - Bearer + ${token}` )
+      const response = await axios.get(config.endpoint + '/cart', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+console.log('Cart-Data', response.data)
+// setCartItems(response.data)
+return response.data
+    } catch (e) {
+      if (e.response && e.response.status === 400) {
+        enqueueSnackbar(e.response.data.message, { variant: "error" });
+      } else {
+        enqueueSnackbar(
+          "Could not fetch cart details. Check that the backend is running, reachable and returns valid JSON.",
+          {
+            variant: "error",
+          }
+        );
+      }
+      return null;
+    }
+  };
 
+  const performAPICall = async (url) => {
+    try {
+      const response = await axios.get(url);
+      console.log('performAPICall', response.data);
+      // setProducts(response.data);
+      // setAllProducts(response.data)
+      return response.data
+    } catch (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        // console.log("A");
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        // console.log("B");
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
 
+      console.log(error.config);
+    }
+  };
 
+  useEffect(() => {
+    const onLoadHandler = async()=>{
+      const cartItems = await fetchCart(userToken)
+      setAllProductsData(await performAPICall(URL));
 
-
+      const cartData = generateCartItemsFrom(cartItems, allProductsData)
+      setCartData(cartData)
+    }
+    onLoadHandler()
+  }, []);
 
 
   return (
@@ -84,7 +149,7 @@ const Checkout = () => {
             <Box my="1rem">
               <Typography>Wallet</Typography>
               <Typography>
-                Pay ${getTotalCartValue(items)} of available $
+                Pay ${getTotalCartValue(cartData)} of available $
                 {localStorage.getItem("balance")}
               </Typography>
             </Box>
@@ -98,7 +163,7 @@ const Checkout = () => {
           </Box>
         </Grid>
         <Grid item xs={12} md={3} bgcolor="#E9F5E1">
-          <Cart isReadOnly products={products} items={items} />
+          <Cart isReadOnly products={allProductsData} items={cartData} />
         </Grid>
       </Grid>
       <Footer />

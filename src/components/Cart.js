@@ -6,6 +6,7 @@ import {
 } from "@mui/icons-material";
 import { Button, IconButton, Stack } from "@mui/material";
 import { Box } from "@mui/system";
+import axios from "axios";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import "./Cart.css";
@@ -47,9 +48,29 @@ import "./Cart.css";
  *    Array of objects with complete data on products in cart
  *
  */
+
 export const generateCartItemsFrom = (cartData, productsData) => {
+  const CartItems = []
+ for(let cartItem of cartData){
+  for(let productItem of productsData){
+      if(cartItem.productId === productItem._id){
+        CartItems.push({
+          'name': productItem.name,
+          'qty': cartItem.qty,
+          'category': productItem.category,
+          'cost':productItem.cost,
+          'image': productItem.image,
+          'rating': productItem.rating,
+          'productId': productItem._id
+        })
+      }
+    }
+ }
+//  console.log('CartItems', CartItems)
+ return CartItems
 };
 
+// const filteredArray = array1.filter(value => array2.includes(value));
 /**
  * Get the total value of all products added to the cart
  *
@@ -61,6 +82,13 @@ export const generateCartItemsFrom = (cartData, productsData) => {
  *
  */
 export const getTotalCartValue = (items = []) => {
+  const totalSum = items.reduce(
+    (acc, item)=>{
+      return acc + item.cost
+    }, 0
+  )
+  
+  return totalSum
 };
 
 
@@ -98,6 +126,7 @@ const ItemQuantity = ({
   );
 };
 
+
 /**
  * Component to display the Cart view
  * 
@@ -112,14 +141,85 @@ const ItemQuantity = ({
  * 
  * 
  */
+          // 'name': productItem.name,
+          // 'qty': cartItem.qty,
+          // 'category': productItem.category,
+          // 'cost':productItem.cost,
+          // 'image': productItem.image,
+          // 'rating': productItem.rating,
+          // 'productId': productItem._id
+const CartProductCard =(props)=> {
+  return (
+<Box display="flex" alignItems="flex-start" padding="1rem">
+    <Box className="image-container">
+        <img
+            // Add product image
+            src={props.image}
+            // Add product name as alt eext
+            alt={props.name}
+            width="100%"
+            height="100%"
+        />
+    </Box>
+    <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
+        height="6rem"
+        paddingX="1rem"
+    >
+        <div>{props.name}</div>
+        <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+        >
+        <ItemQuantity
+        // Add required props by checking implementation
+        value={props.qty}
+        handleAdd={
+          ()=>{
+    props.addToCart(
+    localStorage.getItem('token'),
+    props.items,
+    props.products,
+    props.id,
+    props.qty + 1,
+    false
+            )
+          }
+        }
+        handleDelete={
+          ()=>{
+    props.addToCart(
+    localStorage.getItem('token'),
+    props.items,
+    props.products,
+    props.id,
+    props.qty - 1,
+    false
+            )
+          }
+        }
+        />
+        <Box padding="0.5rem" fontWeight="700">
+            ${props.cost}
+        </Box>
+        </Box>
+    </Box>
+</Box>
+  )
+}
+
 const Cart = ({
   products,
   items = [],
-  handleQuantity,
+  handleQuantity
 }) => {
+  const history = useHistory()
   const userToken = localStorage.getItem('token')
-  
-  if (!items.length) {
+  // console.log('products', products, 'items', items)
+ if (!items.length) {
     return (
       <Box className="cart empty">
         <ShoppingCartOutlined className="empty-cart-icon" />
@@ -134,12 +234,18 @@ const Cart = ({
     <>
       <Box className="cart">
         {/* TODO: CRIO_TASK_MODULE_CART - Display view for each cart item with non-zero quantity */}
+        {
+          items.map(
+            item => <CartProductCard addToCart={handleQuantity} items={items} products={products} key={item.productId} id={item.productId} name={item.name} image={item.image} qty={item.qty} cost={item.cost}/>
+          )        
+        }
         <Box
           padding="1rem"
           display="flex"
           justifyContent="space-between"
           alignItems="center"
         >
+          
           <Box color="#3C3C3C" alignSelf="center">
             Order total
           </Box>
@@ -160,6 +266,9 @@ const Cart = ({
             variant="contained"
             startIcon={<ShoppingCart />}
             className="checkout-btn"
+            onClick={()=>{
+              history.push("/checkout", { from: "Cart" })
+            }}
           >
             Checkout
           </Button>
@@ -172,10 +281,9 @@ const Cart = ({
 export default Cart;
 
 
-// curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNTM1NTM4LCJleHAiOjE2NzE1NTcxMzh9.CSfPNCwOwWzKcwQ2VAnAnIwZxBaGTNoN2IL8sjOz4lw'
+// curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNjUzOTY2LCJleHAiOjE2NzE2NzU1NjZ9.nAMThGgN3mc3fWPcqZugzoMVa7tFHQSps0bvVwDlwJY'
 
-
-// curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNTM1NTM4LCJleHAiOjE2NzE1NTcxMzh9.CSfPNCwOwWzKcwQ2VAnAnIwZxBaGTNoN2IL8sjOz4lw' -H 'Content-Type: application/json' --data-raw '{"productId":"BW0jAAeDJmlZCF8i","qty":1}'
+// curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNjU3MTQ1LCJleHAiOjE2NzE2Nzg3NDV9.W9Zguqt0SRtqhKd2PHa0IPwfkSXX2B-JRreAImDMVsE' -H 'Content-Type: application/json' --data-raw '{"productId":"TwMM4OAhmK0VQ93S","qty":7}'
 
 // curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNTM1NTM4LCJleHAiOjE2NzE1NTcxMzh9.CSfPNCwOwWzKcwQ2VAnAnIwZxBaGTNoN2IL8sjOz4lw' -H 'Content-Type: application/json' --data-raw '{"productId":"KCRwjF7lN97HnEaY","qty":3}' 
 

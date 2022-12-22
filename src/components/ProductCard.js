@@ -31,7 +31,7 @@ const ProductCard = ({ product, handleAddToCart }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button aria-label='add to cart' className="button" variant="contained" onClick={() => {}}>
+        <Button aria-label='add to cart' className="button" variant="contained" onClick={()=>{handleAddToCart(null, null, null, product._id, null, true)}}>
           ADD TO CART
         </Button>
       </CardActions>
