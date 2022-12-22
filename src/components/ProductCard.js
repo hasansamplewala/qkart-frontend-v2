@@ -13,6 +13,7 @@ import React from "react";
 import "./ProductCard.css";
 
 const ProductCard = ({ product, handleAddToCart }) => {
+  const userToken = localStorage.getItem('token')
   return (
     <Card className="card">
       <CardMedia component="img" height="140" image={product.image} />
@@ -31,7 +32,7 @@ const ProductCard = ({ product, handleAddToCart }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button aria-label='add to cart' className="button" variant="contained" onClick={()=>{handleAddToCart(null, null, null, product._id, null, true)}}>
+        <Button aria-label='add to cart' className="button" variant="contained" onClick={()=>{handleAddToCart(userToken, null, null, product._id, null, true)}}>
           ADD TO CART
         </Button>
       </CardActions>

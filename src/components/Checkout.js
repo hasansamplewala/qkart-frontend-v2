@@ -56,7 +56,7 @@ const Checkout = () => {
 
     try {
       // TODO: CRIO_TASK_MODULE_CART - Pass Bearer token inside "Authorization" header to get data from "GET /cart" API and return the response data
-      console.log(`fetching cart data with token - Bearer + ${token}` )
+      console.log(`fetching cart data with token - Bearer ${token}` )
       const response = await axios.get(config.endpoint + '/cart', {
         headers: {
           'Authorization': `Bearer ${token}`

@@ -84,7 +84,7 @@ export const generateCartItemsFrom = (cartData, productsData) => {
 export const getTotalCartValue = (items = []) => {
   const totalSum = items.reduce(
     (acc, item)=>{
-      return acc + item.cost
+      return acc + (item.cost*item.qty)
     }, 0
   )
   
@@ -178,8 +178,8 @@ const CartProductCard =(props)=> {
         // Add required props by checking implementation
         value={props.qty}
         handleAdd={
-          ()=>{
-    props.addToCart(
+           async ()=>{
+    await props.addToCart(
     localStorage.getItem('token'),
     props.items,
     props.products,
@@ -190,8 +190,8 @@ const CartProductCard =(props)=> {
           }
         }
         handleDelete={
-          ()=>{
-    props.addToCart(
+          async ()=>{
+    await props.addToCart(
     localStorage.getItem('token'),
     props.items,
     props.products,

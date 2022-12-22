@@ -73,7 +73,7 @@ const Register = () => {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log("A");
+        // console.log("A");
         enqueueSnackbar(error.response.data.message, {
           variant: "error",
         });
@@ -81,7 +81,7 @@ const Register = () => {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log("B");
+        // console.log("B");
         console.log(error.request);
         enqueueSnackbar(
           "Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
@@ -90,11 +90,11 @@ const Register = () => {
           }
         );
       } else {
-        console.log("C");
+        // console.log("C");
         // Something happened in setting up the request that triggered an Error
         console.log("Error", error.message);
       }
-      console.log("D");
+      // console.log("D");
       console.log(error.config);
     }
   };

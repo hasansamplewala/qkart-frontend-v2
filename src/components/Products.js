@@ -71,9 +71,8 @@ const Products = () => {
   const URL = config.endpoint + "/products";
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([])
- 
   const [isLoading, setIsLoading] = useState(false);
-
+  const [cartItems, setCartItems] = useState([])
 
   const userToken = localStorage.getItem("token");
   const performAPICall = async (url) => {
@@ -81,10 +80,9 @@ const Products = () => {
       setIsLoading(true);
       const response = await axios.get(url);
       setIsLoading(false);
-      console.log('performAPICall', response.data);
+      // console.log('performAPICall', response.data);
       setProducts(response.data);
       setAllProducts(response.data)
-
       return response.data
     } catch (error) {
       if (error.response) {
@@ -110,8 +108,10 @@ const Products = () => {
     const onLoadHandler = async()=>{
       const allProductsData = await performAPICall(URL);
       const cartData = await fetchCart(userToken)
-    }
-    onLoadHandler()
+      setCartItems(cartData)
+   }
+        onLoadHandler()
+        // console.log('Running useEffect')
   }, []);
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Implement search logic
@@ -134,9 +134,9 @@ const Products = () => {
 
   const performSearch = async (text) => {
     try {
-      console.log("text", text);
+      // console.log("text", text);
       const response = await axios.get(URL + "/search?value=" + text);
-      console.log("response", response.data);
+      // console.log("response", response.data);
       setError(false);
       setProducts(response.data);
     } catch (error) {
@@ -220,7 +220,7 @@ const Products = () => {
    *      "message": "Protected route, Oauth2 Bearer token not found"
    * }
    */
-  const [cartItems, setCartItems] = useState([])
+  
   const fetchCart = async (token) => {
     if (!token) return;
 
@@ -233,7 +233,7 @@ const Products = () => {
         }
       })
 console.log('Cart-Data', response.data)
-setCartItems(response.data)
+
 return response.data
     } catch (e) {
       if (e.response && e.response.status === 400) {
@@ -320,11 +320,17 @@ return response.data
     products,
     productId,
     qty,
-    options = { preventDuplicate: false }
+    options
   ) => {
 let data = {}
 let itemIsInCartFlag = true
-console.log('handle add to cart', productId)
+console.log('handle add to cart',
+token, 
+items,
+products,
+productId,
+qty,
+options )
 if(userToken === null){
       enqueueSnackbar(
         "Login to add an item to the Cart",
@@ -378,12 +384,13 @@ async function postcartItem(postData){
     const response = await axios.post(config.endpoint + '/cart', postData,
     {
       headers: {
-        'Authorization': `Bearer ${userToken}` 
+        'Authorization': `Bearer ${token}` 
       }
     }
     )
   console.log('Response for add to cart post request',response)
-  fetchCart(userToken)
+  setCartItems(response.data)
+  // fetchCart(userToken)
   }catch (e) {
     if (e.response && e.response.status === 400) {
       enqueueSnackbar(e.response.data.message, { variant: "error" });
@@ -398,10 +405,6 @@ async function postcartItem(postData){
     return null;
   }
 }
-
-
-
-
   };
 
 
@@ -470,8 +473,7 @@ async function postcartItem(postData){
               </Box>
             ) : error ? (
               <Grid className="loading" item xs={12} md={12}>
-                {console.log("A", error)}
-
+                
                 <SentimentDissatisfied />
                 <br />
                 <p>No products found</p>
@@ -479,7 +481,6 @@ async function postcartItem(postData){
             ) : (
               products.map((product) => (
                 <Grid key={product._id} item xs={6} md={3}>
-                  {console.log("A", error)}
                   <ProductCard product={product} handleAddToCart={addToCart} />
                 </Grid>
               ))
@@ -490,6 +491,7 @@ async function postcartItem(postData){
 
         {userToken !== null && (
           <Grid item sm={12} md={3}>
+            {/* {console.log('Rendering Cart')} */}
             <Cart products={allProducts} items={generateCartItemsFrom(cartItems, allProducts)} handleQuantity={addToCart}/>
           </Grid>
         )}
