@@ -520,6 +520,11 @@ return false
     onLoadHandler();
     getAddresses(userToken);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      // componentwillunmount in functional component.
+      // Anything in here is fired on component unmount.
+      console.log('Component will unmount now')
+  }
   }, []);
 
   return (

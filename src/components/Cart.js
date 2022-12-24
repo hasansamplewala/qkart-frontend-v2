@@ -10,7 +10,13 @@ import axios from "axios";
 import React from "react";
 import { useHistory } from "react-router-dom";
 import "./Cart.css";
-
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 // Definition of Data Structures used
 /**
  * @typedef {Object} Product - Data on product available to buy
@@ -104,6 +110,8 @@ export const getTotalCartValue = (items = []) => {
  */
 
 export const getTotalItems = (items = []) => {
+  
+  return items.length
 };
 
 // TODO: CRIO_TASK_MODULE_CHECKOUT - Add static quantity view for Checkout page cart
@@ -299,8 +307,41 @@ const Cart = ({
           >
             Checkout
           </Button>}
-          
-        </Box>
+                  </Box>
+{isReadOnly &&
+                  <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+              <TableCell component="th" scope="row">
+                Products
+              </TableCell>
+              <TableCell align="right">{getTotalItems(items)}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                Subtotal
+              </TableCell>
+              <TableCell align="right">${getTotalCartValue(items)}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                Shipping Charges
+              </TableCell>
+              <TableCell align="right">$0</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell component="th" scope="row">
+                Total
+              </TableCell>
+              <TableCell align="right">${getTotalCartValue(items)}</TableCell>
+            </TableRow>
+         </TableBody>
+      </Table>
+    </TableContainer>
+    }
       </Box>
     </>
   );
