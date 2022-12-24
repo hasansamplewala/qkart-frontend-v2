@@ -492,7 +492,7 @@ async function postcartItem(postData){
         {userToken !== null && (
           <Grid item sm={12} md={3}>
             {/* {console.log('Rendering Cart')} */}
-            <Cart products={allProducts} items={generateCartItemsFrom(cartItems, allProducts)} handleQuantity={addToCart}/>
+            <Cart isReadOnly={false} products={allProducts} items={generateCartItemsFrom(cartItems, allProducts)} handleQuantity={addToCart}/>
           </Grid>
         )}
 

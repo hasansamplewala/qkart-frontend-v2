@@ -91,7 +91,22 @@ export const getTotalCartValue = (items = []) => {
   return totalSum
 };
 
+// TODO: CRIO_TASK_MODULE_CHECKOUT - Implement function to return total cart quantity
+/**
+ * Return the sum of quantities of all products added to the cart
+ *
+ * @param { Array.<CartItem> } items
+ *    Array of objects with complete data on products in cart
+ *
+ * @returns { Number }
+ *    Total quantity of products added to the cart
+ *
+ */
 
+export const getTotalItems = (items = []) => {
+};
+
+// TODO: CRIO_TASK_MODULE_CHECKOUT - Add static quantity view for Checkout page cart
 /**
  * Component to display the current quantity for a product and + and - buttons to update product quantity on cart
  * 
@@ -104,30 +119,40 @@ export const getTotalCartValue = (items = []) => {
  * @param {Function} handleDelete
  *    Handler function which reduces the quantity of a product in cart by 1
  * 
+ * @param {Boolean} isReadOnly
+ *    If product quantity on cart is to be displayed as read only without the + - options to change quantity
  * 
  */
+
 const ItemQuantity = ({
   value,
   handleAdd,
   handleDelete,
+  isReadOnly
 }) => {
   return (
-    <Stack direction="row" alignItems="center">
-      <IconButton size="small" color="primary" onClick={handleDelete}>
-        <RemoveOutlined />
-      </IconButton>
-      <Box padding="0.5rem" data-testid="item-qty">
-        {value}
-      </Box>
-      <IconButton size="small" color="primary" onClick={handleAdd}>
-        <AddOutlined />
-      </IconButton>
-    </Stack>
-  );
-};
+  
+  <Stack direction="row" alignItems="center">
+    {isReadOnly ? (<>
+<Box padding="0.5rem" data-testid="item-qty">
+Qty: {value}
+</Box>
+</>) : (<><IconButton size="small" color="primary" onClick={handleDelete}>
+<RemoveOutlined />
+</IconButton>
+<Box padding="0.5rem" data-testid="item-qty">
+{value}
+</Box>
+<IconButton size="small" color="primary" onClick={handleAdd}>
+<AddOutlined />
+</IconButton></>)}
 
+    
+  
+</Stack>
+    )
 
-/**
+}/**
  * Component to display the Cart view
  * 
  * @param { Array.<Product> } products
@@ -201,6 +226,7 @@ const CartProductCard =(props)=> {
             )
           }
         }
+isReadOnly={props.isReadOnly}
         />
         <Box padding="0.5rem" fontWeight="700">
             ${props.cost}
@@ -214,7 +240,8 @@ const CartProductCard =(props)=> {
 const Cart = ({
   products,
   items = [],
-  handleQuantity
+  handleQuantity,
+  isReadOnly
 }) => {
   const history = useHistory()
   const userToken = localStorage.getItem('token')
@@ -236,7 +263,7 @@ const Cart = ({
         {/* TODO: CRIO_TASK_MODULE_CART - Display view for each cart item with non-zero quantity */}
         {
           items.map(
-            item => <CartProductCard addToCart={handleQuantity} items={items} products={products} key={item.productId} id={item.productId} name={item.name} image={item.image} qty={item.qty} cost={item.cost}/>
+            item => <CartProductCard isReadOnly={isReadOnly} addToCart={handleQuantity} items={items} products={products} key={item.productId} id={item.productId} name={item.name} image={item.image} qty={item.qty} cost={item.cost}/>
           )        
         }
         <Box
@@ -261,7 +288,7 @@ const Cart = ({
         </Box>
 
         <Box display="flex" justifyContent="flex-end" className="cart-footer">
-          <Button
+          {!isReadOnly && <Button
             color="primary"
             variant="contained"
             startIcon={<ShoppingCart />}
@@ -271,7 +298,8 @@ const Cart = ({
             }}
           >
             Checkout
-          </Button>
+          </Button>}
+          
         </Box>
       </Box>
     </>
@@ -288,3 +316,12 @@ export default Cart;
 // curl 'http://localhost:8082/api/v1/cart' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNTM1NTM4LCJleHAiOjE2NzE1NTcxMzh9.CSfPNCwOwWzKcwQ2VAnAnIwZxBaGTNoN2IL8sjOz4lw' -H 'Content-Type: application/json' --data-raw '{"productId":"KCRwjF7lN97HnEaY","qty":3}' 
 
 // curl 'http://3.6.118.215:8082/api/v1/products'
+//  Addresses
+
+// curl 'http://localhost:8082/api/v1/user/addresses' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNzgzMjU3LCJleHAiOjE2NzE4MDQ4NTd9.cw9r1U5t3bguR5CBD1IArr5nc0VRR3fuF-iEufch-2c' 
+
+// 
+// curl 'http://localhost:8082/api/v1/user/addresses' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxNzgzMjU3LCJleHAiOjE2NzE4MDQ4NTd9.cw9r1U5t3bguR5CBD1IArr5nc0VRR3fuF-iEufch-2c' -H 'Content-Type: application/json' --data-raw '{"address":"Test address\n12th street, Mumbai"}' 
+
+// curl 'http://localhost:8082/api/v1/user/addresses/x7AXiWVZ8pBqxOV8J6utP' -X 'DELETE' -H 'Accept: application/json, text/plain, */*' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJUZXN0IiwiaWF0IjoxNjcxODYxNTU4LCJleHAiOjE2NzE4ODMxNTh9.ANsMBENWs2qWQ1MX9pszzFYtP-YIhe3lz28NCjIfWqs'
+
