@@ -7,6 +7,7 @@ import Checkout from "./components/Checkout";
 import Thanks from "./components/Thanks";
 // https://qkart-frontend-996r.onrender.com
 // http://${ipConfig.workspaceIp}:8082/api/v1
+// http://3.109.15.77:8082/api/v1
 export const config = {
   endpoint: `http://${ipConfig.workspaceIp}:8082/api/v1`,
 };
