@@ -3,6 +3,7 @@ Overview
 Visit the demo website below,
 
 # https://qkart-frontend-hasansamplewala.netlify.app/
+Note: Please wait for atleast 3-4 mins for the backend to load the products. You will need to register before logging in.
 
 During the course of this project,
 
